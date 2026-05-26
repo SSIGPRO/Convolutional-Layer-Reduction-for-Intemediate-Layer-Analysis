@@ -2,7 +2,7 @@
 import sys
 from pathlib import Path as Path
 sys.path.insert(0, (Path.home()/'repos/peepholelib').as_posix())
-sys.path.insert(0, (Path.home()/'repos/XAI/src/conv_red').as_posix())
+sys.path.insert(0, (Path.home()/'repos/ConvRed').as_posix())
 
 import pandas as pd
 from statistics import geometric_mean as geomean
@@ -43,6 +43,7 @@ def peephole_wrap(config, **kwargs):
     ph_path = kwargs['ph_path']
     ph_name = kwargs['ph_name']
     bs = kwargs['batch_size']
+    ds_name = kwargs['dataset_name']
     verbose = kwargs['verbose']
 
     _device = ray_get_device() 
@@ -59,24 +60,25 @@ def peephole_wrap(config, **kwargs):
     # instances
     #--------------------------------
     model = ModelWrap(
-            model = Model(),
+            model = Model(weights = pre_train_weights.DEFAULT),
             target_modules = target_layers,
             device = _device
             )
 
-    model.update_output(
-            output_layer = output_layer,
-            to_n_classes = n_classes,
-            overwrite = True 
-            )
-                                            
-    model.load_checkpoint(
-            name = model_name,
-            path = model_path,
-            verbose = verbose
-            )
+    if update_output:
+        model.update_output(
+                output_layer = output_layer,
+                to_n_classes = n_classes,
+                overwrite = True
+                )
+
+        model.load_checkpoint(
+                name = model_name,
+                path = model_path,
+                verbose = verbose
+                )
     
-    model.prepend_normalizer(
+    model.set_normalizer(
             mean = normalization_mean,
             std = normalization_std
             )
@@ -112,7 +114,7 @@ def peephole_wrap(config, **kwargs):
             drillers[_l].fit(
                     datasets = ds,
                     corevectors = cv,
-                    loader = 'CIFAR100-train-'+args.model,
+                    loader = f'{ds_name}-train-'+args.model,
                     verbose=verbose
                     )
             drillers[_l].save()
@@ -136,8 +138,9 @@ def peephole_wrap(config, **kwargs):
             )
 
         # Evaluation
-        score_fns = get_score_fns(args.model)
+        score_fns = get_score_fns(args.model, args.dataset, ood_datasets, atk_names, proto_threshold=proto_threshold)
         scores = {}
+        # TODO: update aucs after PR
         for score_name, score_fn in score_fns.items():
             scores = score_fn(
                     datasets = ds,
@@ -150,7 +153,7 @@ def peephole_wrap(config, **kwargs):
                     )
             if type(scores) == tuple: scores = scores[0]
 
-        auc_kwargs_ood = get_auc_kwargs_ood(args.model)
+        auc_kwargs_ood = get_auc_kwargs_ood(args.model, args.dataset, ood_datasets)
         aucs_ood = auc_atks(
                 datasets = ds,
                 scores = scores,
@@ -158,7 +161,7 @@ def peephole_wrap(config, **kwargs):
                 verbose = verbose
                 )
 
-        auc_kwargs_aa = get_auc_kwargs_aa(args.model)
+        auc_kwargs_aa = get_auc_kwargs_aa(args.model, args.dataset, atk_names)
         aucs_aa = auc_atks(
                 datasets = ds,
                 scores = scores,
@@ -200,7 +203,7 @@ if __name__ == "__main__":
             target_modules = target_layers,
             )
     
-    dummy_model.prepend_normalizer(
+    dummy_model.set_normalizer(
             mean = normalization_mean,
             std = normalization_std
             )
@@ -213,7 +216,11 @@ if __name__ == "__main__":
             path = cvs_path,
             )
 
-    with datasets as ds, corevecs as cv: 
+    loaders = get_loaders(ood_datasets)
+    inference_names = get_inference_names(ood_datasets)
+    transforms = get_transforms(ood_datasets)
+
+    with datasets as ds, corevecs as cv:
         ds.load_only(
                 loaders = loaders,
                 transforms = transforms,
@@ -243,9 +250,9 @@ if __name__ == "__main__":
 
         # resources per trial, leave gpu=1
         if use_cuda:
-            resources = {"cpu": 32, "gpu": 1}
+            resources = {"cpu": 8, "gpu": 1}
         else:
-            resources = {"cpu": 32}
+            resources = {"cpu": 8}
 
         if hyper_params_file.exists():
             print('Already tunned parameters found in %s. Runing agains and appending results.'%(hyper_params_file.as_posix()))
@@ -254,7 +261,7 @@ if __name__ == "__main__":
             _prev_results_df = None
 
         searcher = OptunaSearch(metric=['AUC general'], mode=['max'])
-        algo = ConcurrencyLimiter(searcher, max_concurrent=4)
+        algo = ConcurrencyLimiter(searcher, max_concurrent=6)
         scheduler = AsyncHyperBandScheduler(grace_period=5, max_t=100, metric='AUC general', mode='max') 
 
         trainable = tune.with_resources(
@@ -267,23 +274,36 @@ if __name__ == "__main__":
                     ph_path = phs_path,
                     ph_name = phs_name,
                     batch_size = int(bs_base*bs_model_scale*bs_red_scale*bs_analysis_scale),
+                    dataset_name = args.dataset,                
                     verbose = verbose
                     ),
                 resources 
                 )
 
-        tuner = tune.Tuner(
-                trainable,
-                tune_config = tune.TuneConfig(
-                    search_alg = algo,
-                    num_samples = tune_num_samples, 
-                    scheduler = scheduler,
-                    ),
-                run_config = train.RunConfig(
-                    storage_path = tune_storage_path
-                    ),
-                param_space = param_space,
-                )
+        _existing_runs = sorted(tune_storage_path.glob('peephole_wrap_*'))
+        _restore_path = _existing_runs[0].as_posix() if _existing_runs else None
+
+        if _restore_path is not None and tune.Tuner.can_restore(_restore_path):
+            print(f'Restoring existing tuning run from {_restore_path}')
+            tuner = tune.Tuner.restore(
+                    _restore_path,
+                    trainable = trainable,
+                    restart_errored = True,
+                    param_space = param_space,
+                    )
+        else:
+            tuner = tune.Tuner(
+                    trainable,
+                    tune_config = tune.TuneConfig(
+                        search_alg = algo,
+                        num_samples = tune_num_samples,
+                        scheduler = scheduler,
+                        ),
+                    run_config = train.RunConfig(
+                        storage_path = tune_storage_path
+                        ),
+                    param_space = param_space,
+                    )
 
         result = tuner.fit()
 

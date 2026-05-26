@@ -47,71 +47,43 @@ def get_drillers_kwargs(**kwargs):
 def analysis_param_space(configs, args):
     for _n, _l in configs.items():
         # mag is divided by 1000 at dmd to avoid large file names
-        _l['magnitude'] = choice(linspace(0, 10, 10).round().numpy().tolist())
-    configs['model'] = args.model 
-    configs['reduction'] = args.reduction 
+        _l['magnitude'] = choice(linspace(1, 10, 10).numpy().tolist())
+    configs['model'] = args.model
+    configs['reduction'] = args.reduction
     configs['analysis'] = args.analysis
-    return configs 
+    configs['dataset'] = args.dataset
+    return configs
 
-def get_score_fns(model):
+# TODO: update score after PR
+def get_score_fns(model, ds_name, ood_dss, atks, **kwargs):
     return {
             'DMD-ood': partial(
                 dmd_score,
-                pos_loader_train = 'CIFAR100-val-'+model,
-                pos_loader_test = 'CIFAR100-test-'+model,
-                neg_loaders = {
-                    'Places365-test-'+model: ['Places365-val-'+model],
-                    'SVHN-test-'+model: ['SVHN-val-'+model],
-                    'MNIST-test-'+model: ['MNIST-val-'+model],
-                    'Textures-test-'+model: ['Textures-val-'+model],
-                    },
+                pos_loader_train = f'{ds_name}-val-{model}',
+                pos_loader_test = f'{ds_name}-test-{model}',
+                neg_loaders = {f'{k}-test-{model}': [f'{k}-val-{model}'] for k in ood_dss.keys()},
                 ),
             'DMD-aa': partial(
                 dmd_score,
-                pos_loader_train = 'CIFAR100-val-'+model,
-                pos_loader_test = 'CIFAR100-test-'+model,
-                neg_loaders = {
-                    'CIFAR100-test-BIM-'+model: ['CIFAR100-val-BIM-'+model],
-                    'CIFAR100-test-CW-'+model: ['CIFAR100-val-CW-'+model],
-                    'CIFAR100-test-DF-'+model: ['CIFAR100-val-DF-'+model],
-                    'CIFAR100-test-PGD-'+model: ['CIFAR100-val-PGD-'+model],
-                    },
-                    ),
+                pos_loader_train = f'{ds_name}-val-{model}',
+                pos_loader_test = f'{ds_name}-test-{model}',
+                neg_loaders = {f'{ds_name}-test-{a}-{model}': [f'{ds_name}-val-{a}-{model}'] for a in atks},
+                ),
         }
 
-def get_auc_kwargs_ood(model):
+def get_auc_kwargs_ood(model, ds_name, ood_dss):
     return {
             'ori_loaders': {
-                'DMD-ood': [
-                    'Places365-val-'+model,
-                    'SVHN-val-'+model,
-                    'MNIST-val-'+model,
-                    'Textures-val-'+model,
-                    ],
+                'DMD-ood': [f'{k}-val-{model}' for k in ood_dss.keys()],
                 },
-            'atk_loaders': [
-                'Places365-test-'+model,
-                'SVHN-test-'+model,
-                'MNIST-test-'+model,
-                'Textures-test-'+model,
-                ],
+            'atk_loaders': [f'{k}-test-{model}' for k in ood_dss.keys()],
             'filter_key': None
             }
 
-def get_auc_kwargs_aa(model):
+def get_auc_kwargs_aa(model, ds_name, atks):
     return {
             'ori_loaders': {
-                'DMD-aa': [
-                    'CIFAR100-val-BIM-'+model,
-                    'CIFAR100-val-CW-'+model,
-                    'CIFAR100-val-DF-'+model,
-                    'CIFAR100-val-PGD-'+model,
-                    ],
+                'DMD-aa': [f'{ds_name}-val-{a}-{model}' for a in atks],
                 },
-            'atk_loaders': [
-                'CIFAR100-test-BIM-'+model,
-                'CIFAR100-test-CW-'+model,
-                'CIFAR100-test-DF-'+model,
-                'CIFAR100-test-PGD-'+model,
-                ]
+            'atk_loaders': [f'{ds_name}-test-{a}-{model}' for a in atks],
             }

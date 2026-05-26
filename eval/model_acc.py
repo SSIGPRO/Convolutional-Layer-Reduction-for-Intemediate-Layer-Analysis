@@ -2,7 +2,7 @@
 import sys
 from pathlib import Path as Path
 sys.path.insert(0, (Path.home()/'repos/peepholelib').as_posix())
-sys.path.insert(0, (Path.home()/'repos/XAI/src/conv_red').as_posix())
+sys.path.insert(0, (Path.home()/'repos/ConvRed').as_posix())
 
 # Our stuff
 from peepholelib.datasets.parsedDataset import ParsedDataset 
@@ -15,9 +15,12 @@ if __name__ == "__main__":
             path = ds_path,
             )
 
+    inference_names = get_inference_names(ood_datasets)
+    transforms = get_transforms(ood_datasets)
+
     with datasets as ds:
         ds.load_only(
-                loaders = ['CIFAR100-test'],
+                loaders = [f'{args.dataset}-test'],
                 transforms = transforms,
                 inference_names = inference_names,
                 verbose = verbose

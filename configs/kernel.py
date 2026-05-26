@@ -12,7 +12,7 @@ save_output = False
 def get_reducer_kwargs(tl):
     ret = {}
     for _n, _l in tl.items():
-        ret[_n] = {'rank': min(_l.out_channels, _l.in_channels)}
+        ret[_n] = {'rank': min(_l.out_channels, _l.in_channels*_l.kernel_size[0]*_l.kernel_size[1]+(_l.bias is not None))}
     return ret
 
 def reduction_param_space(red_kw):

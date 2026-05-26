@@ -2,8 +2,7 @@
 import sys
 from pathlib import Path as Path
 sys.path.insert(0, (Path.home()/'repos/peepholelib').as_posix())
-sys.path.insert(0, (Path.home()/'repos/XAI/src/conv_red').as_posix())
-from statistics import geometric_mean as geomean
+sys.path.insert(0, (Path.home()/'repos/ConvRed').as_posix())
 
 # plotting
 import pandas as pd
@@ -16,7 +15,7 @@ import torch
 
 # Our stuff
 from configs.common import *
-from utils.pareto import find_pareto
+from utils.get_best_configs import get_best_config
 
 plt.rcParams.update({
     "text.usetex": True,
@@ -30,11 +29,13 @@ def plot_isometrics(**kwargs):
     ub_x = kwargs.get('ub_x', 1)
     lb_y = kwargs.get('lb_y', 0)
     ub_y = kwargs.get('ub_y', 1)
+    n_ood = kwargs.get('n_ood', 1)
+    n_aa = kwargs.get('n_aa', 1)
 
     isos = torch.linspace(step, 1, int(1/step))
     for iso in isos:
         x = torch.linspace(1/n_points, 1, n_points)
-        y = (iso**2)/x
+        y = ((iso**(n_ood + n_aa))/(x**n_ood))**(1/n_aa)
 
         # filtering in range
         idx_x = torch.logical_and(x >= lb_x , x <= ub_x)
@@ -49,29 +50,19 @@ def plot_isometrics(**kwargs):
 
 
 if __name__ == "__main__":
-    hyperp_files = list(Path(args.data_path).glob('*/peepholes/*/*/hyperparams.pickle')) 
-   
+    hyperp_files = list(Path(args.data_path).glob('*/*/peepholes/*/*/hyperparams.pickle'))
+
     dfs = []
     best_configs = pd.DataFrame({})
 
-    for hf in hyperp_files:  
-        _df = pd.read_pickle(hf)[['AUC OoD', 'AUC AA', 'model', 'reduction', 'analysis']]
-        print(hf, len(_df))
+    for hf in hyperp_files:
+        dataset = hf.relative_to(args.data_path).parts[0]
+        _df = pd.read_pickle(hf)[['AUC OoD', 'AUC AA', 'dataset', 'model', 'reduction', 'analysis']]
+        dfs.append(_df)
+        
+        best_config = get_best_config(hf)[['AUC OoD', 'AUC AA', 'dataset', 'model', 'reduction', 'analysis']]
+        best_configs = pd.concat([best_configs, best_config], ignore_index=True)
 
-        model = _df['model'][0]
-        reduction = _df['reduction'][0]
-        analysis = _df['analysis'][0]
-
-        dfs.append(_df) 
-
-        # same as utils/get_best_configs.py
-        x = _df[['AUC OoD', 'AUC AA']].values
-        idx = find_pareto(x)
-        pareto = torch.tensor(_df.iloc[idx][['AUC OoD', 'AUC AA']].values)
-        best = (pareto[:,0]*pareto[:,1]).argmax().item()
-        best_config = _df[idx[best]:idx[best]+1] # I hate dataframes
-        best_configs = pd.concat([best_configs, best_config])
-    
     # change the names to plot the bests according to the hue 
     best_configs = best_configs.replace({
         'avgpooling': 'best avgpooling',
@@ -89,48 +80,58 @@ if __name__ == "__main__":
 
     df = df.rename(columns={'AUC OoD': auc_ood, 'AUC AA': auc_aa})
 
-    # plotting
-    grid = sb.FacetGrid(
-            data = df,
-            row = 'analysis',
-            col = 'model',
-            col_order = ['VGG', 'MobileNet', 'ResNet', 'ConvNeXt'],
-            hue = 'reduction',
-            hue_order = ['avgpooling', 'toeplitz', 'kernel','best avgpooling', 'best toeplitz', 'best kernel'],
-            hue_kws = dict(
-                marker = ['.', '.', '.', 'd', 'd', 'd'],
-                ),
-            palette = ['xkcd:ocean blue', 'xkcd:tangerine', 'xkcd:grass green', 'xkcd:electric blue', 'xkcd:bright orange', 'xkcd:forest']
-            )
-    
-    grid.map(
-            plot_isometrics,
-            lb_x = df[auc_ood].min(),
-            ub_x = df[auc_ood].max(),
-            lb_y = df[auc_aa].min(),
-            ub_y = df[auc_aa].max(),
-            step = 0.05,
-            )
+    results_path.mkdir(parents=True, exist_ok=True)
 
-    grid.map(
-            sb.scatterplot,
-            auc_ood,
-            auc_aa,
-            alpha = 0.6,
-            s = 50,
-            )
+    _n_ood_per_ds = {'CIFAR100': 4, 'ImageNet': 3}
 
-    # add the isometrics to the legend
-    grid.set_titles('{col_name} | {row_name}')
-    grid.add_legend()
-    ax = plt.gca()
-    leg = ax.legend(
-            handles = [Line2D([0],[0], c='xkcd:light grey', lw=0.3, alpha=0.9, label=f'{auc_all}\nisometrics')],
-            loc = 'upper left',
-            bbox_to_anchor = (1.05, 0.6),
-            frameon = False
-            )
-    ax.add_artist(leg)  
+    for dataset in df['dataset'].unique():
+        df_ds = df[df['dataset'] == dataset]
+        n_ood = _n_ood_per_ds.get(dataset, len(ood_datasets))
 
-    plots_path.mkdir(parents=True, exist_ok=True)
-    plt.savefig((plots_path/f'aucs.png').as_posix(), dpi=300, bbox_inches='tight')
+        # plotting
+        grid = sb.FacetGrid(
+                data = df_ds,
+                row = 'analysis',
+                col = 'model',
+                col_order = ['VGG', 'MobileNet', 'ResNet', 'ConvNeXt'],
+                hue = 'reduction',
+                hue_order = ['avgpooling', 'toeplitz', 'kernel','best avgpooling', 'best toeplitz', 'best kernel'],
+                hue_kws = dict(
+                    marker = ['.', '.', '.', 'd', 'd', 'd'],
+                    ),
+                palette = ['xkcd:ocean blue', 'xkcd:tangerine', 'xkcd:grass green', 'xkcd:electric blue', 'xkcd:bright orange', 'xkcd:forest']
+                )
+
+        grid.map(
+                plot_isometrics,
+                lb_x = df_ds[auc_ood].min(),
+                ub_x = df_ds[auc_ood].max(),
+                lb_y = df_ds[auc_aa].min(),
+                ub_y = df_ds[auc_aa].max(),
+                step = 0.05,
+                n_ood = n_ood,
+                n_aa = len(atk_names),
+                )
+
+        grid.map(
+                sb.scatterplot,
+                auc_ood,
+                auc_aa,
+                alpha = 0.6,
+                s = 50,
+                )
+
+        # add the isometrics to the legend
+        grid.set_titles('{col_name} | {row_name}')
+        grid.add_legend()
+        ax = plt.gca()
+        leg = ax.legend(
+                handles = [Line2D([0],[0], c='xkcd:light grey', lw=0.3, alpha=0.9, label=f'{auc_all}\nisometrics')],
+                loc = 'upper left',
+                bbox_to_anchor = (1.05, 0.6),
+                frameon = False
+                )
+        ax.add_artist(leg)
+
+        plt.savefig((results_path/f'aucs_{dataset}.png').as_posix(), dpi=300, bbox_inches='tight')
+        plt.close()

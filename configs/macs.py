@@ -1,8 +1,10 @@
 # Python stuff
 from functools import partial
 
-# Ray Stuff
+# Torch stuff
 from torch import linspace, int32
+
+# Ray Stuff
 from ray.tune import choice 
 
 # Peepholelib stuff
@@ -40,43 +42,41 @@ def get_drillers_kwargs(**kwargs):
 
 def analysis_param_space(configs, args):
     for _n, _l in configs.items():
-        _l['n_clusters'] = choice(linspace(50, 500, 10, dtype=int32).numpy().tolist())
-    configs['model'] = args.model 
-    configs['reduction'] = args.reduction 
+        if args.dataset == 'CIFAR100':
+            _l['n_clusters'] = choice(linspace(50, 500, 10, dtype=int32).numpy().tolist())
+        if args.dataset == 'ImageNet':
+            _l['n_clusters'] = choice(linspace(50, 5000, 10, dtype=int32).numpy().tolist())
+        
+    configs['model'] = args.model
+    configs['reduction'] = args.reduction
     configs['analysis'] = args.analysis
-    return configs 
+    configs['dataset'] = args.dataset
+    return configs
 
-def get_score_fns(model):
+# TODO: update score after PR
+def get_score_fns(model, ds_name, ood_dss=None, atks=None, proto_threshold=0.9):
     return {
             'MACS': partial(
                 proto_score,
-                proto_key = 'CIFAR100-train-'+model
+                proto_key = f'{ds_name}-train-{model}',
+                proto_threshold = proto_threshold
                 )
         }
 
-def get_auc_kwargs_ood(model):
+def get_auc_kwargs_ood(model, ds_name, ood_dss):
     return {
             'ori_loaders': {
-                'MACS': 'CIFAR100-test-'+model,
+                'MACS': f'{ds_name}-test-{model}',
                 },
-            'atk_loaders': [
-                'Places365-test-'+model,
-                'SVHN-test-'+model,
-                'MNIST-test-'+model,
-                'Textures-test-'+model,
-                ],
+            'atk_loaders': [f'{k}-test-{model}' for k in ood_dss.keys()],
             'filter_key': None
             }
 
-def get_auc_kwargs_aa(model):
+def get_auc_kwargs_aa(model, ds_name, atks):
     return {
             'ori_loaders': {
-                'MACS': 'CIFAR100-test-'+model,
+                'MACS': f'{ds_name}-test-{model}',
                 },
             'atk_loaders': [
-                'CIFAR100-test-BIM-'+model,
-                'CIFAR100-test-CW-'+model,
-                'CIFAR100-test-DF-'+model,
-                'CIFAR100-test-PGD-'+model,
-                ]
+                f'{ds_name}-test-{a}-{model}' for a in atks],
             }

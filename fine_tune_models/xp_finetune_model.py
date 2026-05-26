@@ -1,7 +1,8 @@
 import sys
 from pathlib import Path as Path
 sys.path.insert(0, (Path.home()/'repos/peepholelib').as_posix())
-sys.path.insert(0, (Path.home()/'repos/XAI/src/conv_red').as_posix())
+sys.path.insert(0, (Path.home()/'repos/ConvRed').as_posix())
+
 from datetime import datetime
 
 # torch stuff
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     #--------------------------------
 
     dataset = Cifar100(
-            path = cifar_path,
+            path = base_ds_path,
             std_transform = transform,
             aug_transform = augmentation
             )
@@ -58,7 +59,7 @@ if __name__ == "__main__":
             to_n_classes = n_classes
             )
 
-    model.prepend_normalizer(
+    model.set_normalizer(
             mean = normalization_mean,
             std = normalization_std
             )
@@ -83,22 +84,35 @@ if __name__ == "__main__":
             **scheduler_kwargs
             )
 
+    bs = int(model_fine_tune_bs*bs_model_scale)
+
+    datasets = {
+            'train': dataset.__dataset__[f'{dataset_name}-train'],
+            'val': dataset.__dataset__[f'{dataset_name}-val'],
+            'test': dataset.__dataset__[f'{dataset_name}-test'],
+            }
+
+    dataloader_kwargs = {
+            'train': dict(batch_size = bs, shuffle = True, **dl_kwargs),
+            'val': dict(batch_size = bs, shuffle = False, **dl_kwargs),
+            'test': dict(batch_size = bs, shuffle = False, **dl_kwargs),
+            }
+
+    iterations_kwargs = {'train': iterations, 'val': iterations, 'test': 'full'}
+
     finetuner = Trainer(
             model = model,
             path = tune_dir,
             name = tune_name,
-            dataset = dataset,
-            train_key = f'{dataset_name}-train',
-            val_key = f'{dataset_name}-val',
-            test_key = f'{dataset_name}-test',
-            batch_size = model_fine_tune_bs,
-            dataloader_kwargs = dl_kwargs,
+            datasets = datasets,
+            dataloader_kwargs = dataloader_kwargs,
+            iterations = iterations_kwargs,
             max_epochs = max_epochs,
-            iterations = iterations,
             optimizer = optimizer,
             scheduler = scheduler,
             early_stopping_patience = max_epochs,
-            save_every = save_every 
+            save_every = save_every,
+            verbose = verbose
             )
     
     finetuner.fit()

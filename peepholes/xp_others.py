@@ -14,9 +14,22 @@ from cuda_selector import auto_cuda
 # Peepholelib stuff
 from peepholelib.datasets.parsedDataset import ParsedDataset 
 from peepholelib.models.model_wrap import ModelWrap 
-from peepholelib.coreVectors.coreVectors import CoreVectors
-from peepholelib.peepholes.peepholes import Peepholes
 from peepholelib.plots.atks import auc_atks 
+
+# --- softmax scores
+from peepholelib.scores.model_confidence import MSPScore
+from peepholelib.scores.doctor import DOCTORScore
+from peepholelib.scores.relu import RelUScore
+
+# --- logits scores 
+from peepholelib.scores.energy import EnergyScore
+from peepholelib.scores.max_logit import MaxLogitScore
+from peepholelib.scores.predictive_entropy import PEScore
+
+# --- input based scores
+from peepholelib.featureSqueezing.FeatureSqueezingDetector import FeatureSqueezingDetector as FSD
+from peepholelib.featureSqueezing.preprocessing import NLM_filtering_torch, bit_depth_torch, MedianPool2d
+from peepholelib.scores.feature_squeezing import FeatureSqueezingScore
 
 from configs.common import *
 from utils.get_best_configs import test_configs 
@@ -69,37 +82,6 @@ if __name__ == "__main__":
             path = ds_path,
             )
     
-    #--------------------------------
-    # Corevectors 
-    #--------------------------------
-    corevecs = CoreVectors(
-            path = cvs_path,
-            model = model,
-            )
-    
-    #--------------------------------
-    # Peepholes
-    #--------------------------------
-    hyperps = test_configs(model._target_modules, hyper_params_file)
-
-    # create phs names from configs
-    # same as tuning
-    phs_names = {} 
-    for _l, _c in hyperps.items():
-        if type(_c) == dict:
-            phs_names[_l] = ''
-            for _cn, _cv in _c.items():
-                phs_names[_l] += f'{_cn}{_cv}'
-
-    peepholes = Peepholes(
-            path = phs_path,
-            device = device
-            )
-
-    loaders = get_loaders(ood_datasets)
-    inference_names = get_inference_names(ood_datasets)
-    transforms = get_transforms(ood_datasets)
-
     with datasets as ds, corevecs as cv, peepholes as ph:
         ds.load_only(
                 loaders = loaders,
@@ -108,33 +90,70 @@ if __name__ == "__main__":
                 verbose = verbose
                 )
 
-        cv.load_only(
-                loaders = list(ds._dss.keys()),
-                names = cvs_names,
-                verbose = verbose
-                ) 
-
-        ph.load_only(
-                loaders = list(ds._dss.keys()),
-                names = phs_names,
-                verbose = verbose 
+        score_loaders = [k for k in ds._dss.keys() if 'test' in k]
+        ## SoftMax based scores
+        MSPScore(save_path=scores_file)(
+                datasets = ds,
+                loaders = score_loaders,
+                verbose = verbose,
                 )
 
-        score_fns = get_score_fns(args.model, args.dataset, ood_datasets, atk_names, proto_threshold=proto_threshold)
-        scores = {}
-        # TODO: update aucs after PR
-        for score_name, score_fn in score_fns.items():
-            scores = score_fn(
-                    datasets = ds,
-                    peepholes = ph,
-                    score_name = score_name,
-                    batch_size = bs,
-                    target_modules = target_layers,
-                    append_scores = scores,
-                    verbose = verbose
-                    )
-            if type(scores) == tuple: scores = scores[0]
+        DOCTORScore(save_path=scores_file)(
+                datasets = ds,
+                model = model,
+                loaders = score_loaders,
+                batch_size = int(bs_base*2),
+                score_name = 'DOC',
+                verbose = verbose,
+                )
+                                                              
+        RelUScore(save_path=scores_file)(
+                datasets = ds,
+                loaders = score_loaders,
+                fit_key = f'{args.dataset}-val-{args.model}',
+                verbose = verbose,
+                )
 
+        ## Logits based scores 
+        EnergyScore(save_path=scores_file)(
+                datasets = ds,
+                loaders = score_loaders,
+                verbose = verbose,
+                )
+
+        MaxLogitScore(save_path=scores_file)(
+                datasets = ds,
+                loaders = score_loaders,
+                verbose = verbose,
+                )
+
+        PEScore(save_path=scores_file)(
+                datasets = ds,
+                loaders = score_loaders,
+                verbose = verbose,
+                )
+
+        ## Input based score
+
+        fsd = FSD(
+            model = model,
+            prepro_dict = {
+                'median': MedianPool2d(kernel_size=3, stride=1, padding=1),
+                'bit_depth': partial(bit_depth_torch, bits=5),
+                'nlm': partial(NLM_filtering_torch, kernel_size=11, std=4.0, kernel_size_mean=3, sub_filter_size=32),
+                }
+            )
+
+        FeatureSqueezingScore(save_path=scores_file)(
+                datasets = ds,
+                loaders_ori = [k for k in score_loaders if 'test' in k],
+                detector = fsd,
+                batch_size = 2**6,
+                score_name = 'FS',
+                verbose = verbose,
+                )
+        
+        # TODO: update aucs after PR
         auc_kwargs_ood = get_auc_kwargs_ood(args.model, args.dataset, ood_datasets)
         aucs_ood = auc_atks(
                 datasets = ds,
@@ -164,12 +183,13 @@ if __name__ == "__main__":
             _aucs.append(report['AUC '+k]) 
         report['AUC AA'] = geomean(_aucs)
         
+        # TODO: update after PR
         print('Report: ', report)
         save_aucs(
                 report,
                 aucs_df_path,
                 dataset   = args.dataset,
                 model     = args.model,
-                reduction = args.reduction,
+                reduction = '-',
                 analysis  = args.analysis,
                 )
