@@ -4,7 +4,8 @@
 	\label{tab: aucs and fprs CIFAR100}
 	\begin{tabulary}{\linewidth}{C|c|C|C|C|C|C|C|C|C}
 		\toprule
-		Method & Reduction & \multicolumn{2}{c|}{\vgg} & \multicolumn{2}{c|}{\mobilenet} & \multicolumn{2}{c|}{\resnet} & \multicolumn{2}{c}{\convnext} \\\midrule
+		\multirow{2}{*}{Method} & \multirow{2}{*}{Reduction} & \multicolumn{2}{c|}{\vgg} & \multicolumn{2}{c|}{\mobilenet} & \multicolumn{2}{c|}{\resnet} & \multicolumn{2}{c}{\convnext} \\\cline{3-10}
+		 &  & \gls{ood} & \gls{aa} & \gls{ood} & \gls{aa} & \gls{ood} & \gls{aa} & \gls{ood} & \gls{aa} \\\midrule
 		
 		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{macs}}} & \avgpDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
 		& \toeplitzDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
