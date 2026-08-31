@@ -157,24 +157,42 @@ if __name__ == "__main__":
                 verbose = verbose
                 )
 
-        report = {}
+        report_auc = {}
         _aucs_ood = []
         for k in auc_kwargs_ood['atk_loaders']:
-            report['AUC '+k] = list(aucs_ood[k].values())[0]
-            _aucs_ood.append(report['AUC '+k])
-        report['AUC OoD'] = geomean(_aucs_ood)
+            report_auc['AUC '+k] = list(aucs_ood[k].values())[0]
+            _aucs_ood.append(report_auc['AUC '+k])
+        report_auc['AUC OoD'] = geomean(_aucs_ood)
 
         _aucs_aa = []
         for k in auc_kwargs_aa['atk_loaders']:
-            report['AUC '+k] = list(aucs_aa[k].values())[0]
-            _aucs_aa.append(report['AUC '+k])
-        report['AUC AA'] = geomean(_aucs_aa)
+            report_auc['AUC '+k] = list(aucs_aa[k].values())[0]
+            _aucs_aa.append(report_auc['AUC '+k])
+        report_auc['AUC AA'] = geomean(_aucs_aa)
 
-        report['AUC general'] = geomean(_aucs_ood+_aucs_aa)
+        report_auc['AUC general'] = geomean(_aucs_ood+_aucs_aa)
 
-        print('Report: ', report)
+        report_fpr = {}
+        _fprs_ood = []
+        for k in auc_kwargs_ood['atk_loaders']:
+            report_fpr['FPR '+k] = list(fprs_ood[k].values())[0]
+            _fprs_ood.append(report_fpr['FPR '+k])
+        report_fpr['FPR OoD'] = torch.tensor(_fprs_ood).mean().item()
+
+        _fprs_aa = []
+        for k in auc_kwargs_aa['atk_loaders']:
+            report_fpr['FPR '+k] = list(fprs_aa[k].values())[0]
+            _fprs_aa.append(report_fpr['FPR '+k])
+        report_fpr['FPR AA'] = torch.tensor(_fprs_aa).mean().item()
+
+        report_fpr['FPR general'] = torch.tensor(_fprs_ood+_fprs_aa).mean().item()
+
+        print('AUC report: ', report_auc)
+        print('FPR report: ', report_fpr)
+
+    with lock.acquire(timeout=-1):
         save_aucs(
-                report,
+                report_auc,
                 aucs_df_path,
                 dataset   = args.dataset,
                 model     = args.model,
@@ -182,25 +200,8 @@ if __name__ == "__main__":
                 analysis  = args.analysis,
                 )
 
-        # `auc_fpr()` returns 1-FPR, which is aggregated with the geometric mean
-        fpr_report = {}
-        _fprs_ood = []
-        for k in auc_kwargs_ood['atk_loaders']:
-            _fprs_ood.append(list(fprs_ood[k].values())[0])
-            fpr_report['FPR '+k] = 1 - _fprs_ood[-1]
-        fpr_report['FPR OoD'] = 1 - geomean(_fprs_ood)
-
-        _fprs_aa = []
-        for k in auc_kwargs_aa['atk_loaders']:
-            _fprs_aa.append(list(fprs_aa[k].values())[0])
-            fpr_report['FPR '+k] = 1 - _fprs_aa[-1]
-        fpr_report['FPR AA'] = 1 - geomean(_fprs_aa)
-
-        fpr_report['FPR general'] = 1 - geomean(_fprs_ood+_fprs_aa)
-
-        print('FPR report: ', fpr_report)
         save_fprs(
-                fpr_report,
+                report_fpr,
                 fprs_df_path,
                 dataset   = args.dataset,
                 model     = args.model,
