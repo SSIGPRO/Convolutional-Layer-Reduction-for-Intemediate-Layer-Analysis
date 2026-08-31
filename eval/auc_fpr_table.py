@@ -30,12 +30,12 @@ reduction_macros = {
         'kernelDimRed': 'kernel',
         }
 
-# column order matching the table layout, left to right
+# column order matching the table layout, left to right. Each column holds both
+# the AUC and the FPR of a split, printed as 'AUC\FPR'
 col_order = []
 for model in ['VGG', 'MobileNet', 'ResNet', 'ConvNeXt']:
     for split in ['OoD', 'AA', 'general']:
-        col_order.append((model, f'AUC {split}', 'aucs'))
-        col_order.append((model, f'FPR {split}', 'fprs'))
+        col_order.append((model, split))
 
 if __name__ == "__main__":
     dfs = {
@@ -43,14 +43,17 @@ if __name__ == "__main__":
             'fprs': pd.read_pickle(fprs_df_path),
             }
 
+    metric_names = {'aucs': 'AUC', 'fprs': 'FPR'}
+
     # values[dataset][(analysis, reduction)][(model, column, metric)] = number
     values = {}
     for metric, df in dfs.items():
         for _, row in df.iterrows():
             entry = values.setdefault(row['dataset'], {}).setdefault((row['analysis'], row['reduction']), {})
-            for _, col, _metric in col_order:
-                if _metric == metric and col in row and pd.notna(row[col]):
-                    entry[(row['model'], col, metric)] = row[col]
+            for _, split in col_order:
+                col = f'{metric_names[metric]} {split}'
+                if col in row and pd.notna(row[col]):
+                    entry[(row['model'], split, metric)] = row[col]
 
     template_lines = (results_path/'blank_auc_fpr_table.tex').read_text().splitlines()
 
@@ -70,14 +73,17 @@ if __name__ == "__main__":
             rm = re.search(r'\\(\w+DimRed)', line)
             reduction = reduction_macros[rm.group(1)] if rm else default_reduction
 
-            if current_analysis is not None and '$.$' in line:
+            if current_analysis is not None and '\\backslash' in line:
                 entry = ds_values.get((current_analysis, reduction), {})
 
                 originals = re.findall(r'\$([^$]*)\$', line)
                 new_vals = list(originals)
-                for i, (model, col, metric) in enumerate(col_order):
-                    if (model, col, metric) in entry:
-                        new_vals[i] = f'{entry[(model, col, metric)]:.2f}'
+                for i, (model, split) in enumerate(col_order):
+                    parts = new_vals[i].split('\\backslash')
+                    for p, metric in enumerate(['aucs', 'fprs']):
+                        if (model, split, metric) in entry:
+                            parts[p] = f'{entry[(model, split, metric)]:.2f}'
+                    new_vals[i] = '\\backslash'.join(parts)
 
                 it = iter(new_vals)
                 line = re.sub(r'\$([^$]*)\$', lambda m: f'${next(it)}$', line)

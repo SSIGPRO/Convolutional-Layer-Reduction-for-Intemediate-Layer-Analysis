@@ -1,23 +1,23 @@
 \begin{table*}
 	\centering
-	\caption{$\aucGeomOOD$, $\aucGeomAA$ and $\aucGeomAll$, with the respective \gls{fpr} at $95\%$ \gls{tpr}, for the tuned configurations and the compared detection methods (CIFAR100).}
+	\caption{$\aucGeomOOD$, $\aucGeomAA$ and $\aucGeomAll$, with the respective \gls{fpr}, for the tuned configurations and the compared detection methods (CIFAR100).}
 	\label{tab: aucs and fprs CIFAR100}
-	\begin{tabulary}{\linewidth}{C|c|CC|CC|CC|CC|CC|CC|CC|CC|CC|CC|CC|CC}
+	\begin{tabulary}{\linewidth}{C|c|C|C|C|C|C|C|C|C|C|C|C|C}
 		\toprule
-		\multirow{2}{*}{Method} & \multirow{2}{*}{Reduction} & \multicolumn{6}{c|}{\vgg} & \multicolumn{6}{c|}{\mobilenet} & \multicolumn{6}{c|}{\resnet} & \multicolumn{6}{c}{\convnext} \\\cline{3-26}
-		 &  & $\aucGeomOOD$ & $\fprGeomOOD$ & $\aucGeomAA$ & $\fprGeomAA$ & $\aucGeomAll$ & $\fprGeomAll$ & $\aucGeomOOD$ & $\fprGeomOOD$ & $\aucGeomAA$ & $\fprGeomAA$ & $\aucGeomAll$ & $\fprGeomAll$ & $\aucGeomOOD$ & $\fprGeomOOD$ & $\aucGeomAA$ & $\fprGeomAA$ & $\aucGeomAll$ & $\fprGeomAll$ & $\aucGeomOOD$ & $\fprGeomOOD$ & $\aucGeomAA$ & $\fprGeomAA$ & $\aucGeomAll$ & $\fprGeomAll$ \\\midrule
+		\multirow{2}{*}{Method} & \multirow{2}{*}{Reduction} & \multicolumn{3}{c|}{\vgg} & \multicolumn{3}{c|}{\mobilenet} & \multicolumn{3}{c|}{\resnet} & \multicolumn{3}{c}{\convnext} \\\cline{3-14}
+		 &  & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ \\\midrule
 		
-		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{macs}}} & \avgpDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\
-		& \toeplitzDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\
-		& \kernelDimRed & $0.78$ & $0.65$ & $0.89$ & $0.28$ & $0.85$ & $0.39$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{macs}}} & \avgpDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& \toeplitzDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& \kernelDimRed & $0.78\backslash0.65$ & $0.89\backslash0.28$ & $0.85\backslash0.39$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
 		
-		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{dmd}}} & \avgpDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\
-		& \toeplitzDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\
-		& \kernelDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{dmd}}} & \avgpDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& \toeplitzDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& \kernelDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
 		
-		\multicolumn{2}{c|}{\mspScore} & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
-		\multicolumn{2}{c|}{\doctorScore} & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
-		\multicolumn{2}{c|}{\reluScore} & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
-		\multicolumn{2}{c|}{\fsScore} & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
+		\multicolumn{2}{c|}{\mspScore} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		\multicolumn{2}{c|}{\doctorScore} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		\multicolumn{2}{c|}{\reluScore} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		\multicolumn{2}{c|}{\fsScore} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
 	\end{tabulary}
 \end{table*}
