@@ -2,22 +2,25 @@
 	\centering
 	\caption{$\aucGeomOOD$, $\aucGeomAA$ and $\aucGeomAll$, with the respective \gls{fpr}, for the tuned configurations and the compared detection methods.}
 	\label{tab: aucs and fprs}
-	\begin{tabulary}{\linewidth}{C|c|C|C|C|C|C|C|C|C|C|C|C|C}
+	\begin{tabulary}{\linewidth}{C|c|C|C|C|C|C|C|C|C|C|C}
 		\toprule
-		\multirow{2}{*}{Method} & \multirow{2}{*}{Reduction} & \multicolumn{3}{c|}{\vgg} & \multicolumn{3}{c|}{\mobilenet} & \multicolumn{3}{c|}{\resnet} & \multicolumn{3}{c}{\convnext} \\\cline{3-14}
-		 &  & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ \\\midrule
+		\multicolumn{2}{c|}{} & \multicolumn{3}{c|}{\gls{macs}} & \multicolumn{3}{c|}{\gls{dmd}} & \multirow{2}{*}{\gls{msp}} & \multirow{2}{*}{\gls{doctor}} & \multirow{2}{*}{\gls{relu}} & \multirow{2}{*}{\gls{fs}} \\\cline{3-8}
+		Model & Metric & \avgpDimRed & \toeplitzDimRed & \kernelDimRed & \avgpDimRed & \toeplitzDimRed & \kernelDimRed &  &  &  &  \\\midrule
 		
-		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{macs}}} & \avgpDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
-		& \toeplitzDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
-		& \kernelDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\vgg}} & $\aucGeomOOD\backslash\fprGeomOOD$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& $\aucGeomAA\backslash\fprGeomAA$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& $\aucGeomAll\backslash\fprGeomAll$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
 		
-		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{dmd}}} & \avgpDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
-		& \toeplitzDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
-		& \kernelDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\mobilenet}} & $\aucGeomOOD\backslash\fprGeomOOD$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& $\aucGeomAA\backslash\fprGeomAA$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& $\aucGeomAll\backslash\fprGeomAll$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
 		
-		\multicolumn{2}{c|}{\mspScore} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
-		\multicolumn{2}{c|}{\doctorScore} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
-		\multicolumn{2}{c|}{\reluScore} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
-		\multicolumn{2}{c|}{\fsScore} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\resnet}} & $\aucGeomOOD\backslash\fprGeomOOD$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& $\aucGeomAA\backslash\fprGeomAA$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& $\aucGeomAll\backslash\fprGeomAll$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\convnext}} & $\aucGeomOOD\backslash\fprGeomOOD$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& $\aucGeomAA\backslash\fprGeomAA$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
+		& $\aucGeomAll\backslash\fprGeomAll$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
 	\end{tabulary}
 \end{table*}
