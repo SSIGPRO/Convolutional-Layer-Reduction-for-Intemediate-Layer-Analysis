@@ -25,7 +25,7 @@ tunings := $(foreach ds, $(datasets_list), $(foreach pp, $(foreach p, $(foreach 
 # ----------------
 #  Rules
 # ----------------
-#.PHONY: $(tunings)
+.PHONY: $(peepholes)
 #
 # ----------------
 # Accessible Rules
@@ -59,7 +59,8 @@ $(foreach ds, $(datasets_list), $(foreach r, $(reductions), $(foreach m, $(model
 # Peepholes
 define phs_template =
 $(1):
-	python peepholes/xp_peepholes.py -m $(2) -r $(3) -a $(4) -ds $(5) -d $(DATA_DIR)
+	python aucs/xp_peepholes.py -m $(2) -r $(3) -a $(4) -ds $(5) -d $(DATA_DIR)
+	python aucs/xp_others.py -m $(2) -ds $(5) -d $(DATA_DIR)
 endef
 $(foreach ds, $(datasets_list), $(foreach a, $(analyses), $(foreach r, $(reductions), $(foreach m, $(models), $(eval $(call phs_template, $(DATA_DIR)/$(ds)/$(m)/peepholes/$(r)/$(a), $(m), $(r), $(a), $(ds)))))))
 

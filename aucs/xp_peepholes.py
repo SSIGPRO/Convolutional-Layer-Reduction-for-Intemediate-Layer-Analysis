@@ -16,14 +16,20 @@ from peepholelib.datasets.parsedDataset import ParsedDataset
 from peepholelib.models.model_wrap import ModelWrap 
 from peepholelib.coreVectors.coreVectors import CoreVectors
 from peepholelib.peepholes.peepholes import Peepholes
-from peepholelib.plots.atks import auc_atks 
+from peepholelib.plots.atks import auc_fpr
 
 from configs.common import *
-from utils.get_best_configs import test_configs 
-from utils.save_aucs import save_aucs
-    
+from utils.get_best_configs import test_configs
+from utils.save_aucs import save_aucs, save_fprs, saved_scores
+
 if __name__ == "__main__":
-    print(f'{args}') 
+    print(f'{args}')
+
+    _saved = saved_scores(aucs_df_path, args.dataset, args.model, reduction=args.reduction)
+    if args.analysis in _saved:
+        print(f'AUCs for {args.dataset} {args.model} {args.reduction} {args.analysis} already saved in {aucs_df_path}. Skipping.')
+        quit()
+
     lock_file = '../locks/peepholes.cuda.lock'
     lock = FileLock(lock_file)
     with lock.acquire(timeout=-1):
@@ -136,7 +142,7 @@ if __name__ == "__main__":
             if type(scores) == tuple: scores = scores[0]
 
         auc_kwargs_ood = get_auc_kwargs_ood(args.model, args.dataset, ood_datasets)
-        aucs_ood = auc_atks(
+        aucs_ood, fprs_ood = auc_fpr(
                 datasets = ds,
                 scores = scores,
                 **auc_kwargs_ood,
@@ -144,7 +150,7 @@ if __name__ == "__main__":
                 )
 
         auc_kwargs_aa = get_auc_kwargs_aa(args.model, args.dataset, atk_names)
-        aucs_aa = auc_atks(
+        aucs_aa, fprs_aa = auc_fpr(
                 datasets = ds,
                 scores = scores,
                 **auc_kwargs_aa,
@@ -152,22 +158,49 @@ if __name__ == "__main__":
                 )
 
         report = {}
-        _aucs = []
+        _aucs_ood = []
         for k in auc_kwargs_ood['atk_loaders']:
             report['AUC '+k] = list(aucs_ood[k].values())[0]
-            _aucs.append(report['AUC '+k]) 
-        report['AUC OoD'] = geomean(_aucs)
-                                                             
-        _aucs = []
+            _aucs_ood.append(report['AUC '+k])
+        report['AUC OoD'] = geomean(_aucs_ood)
+
+        _aucs_aa = []
         for k in auc_kwargs_aa['atk_loaders']:
             report['AUC '+k] = list(aucs_aa[k].values())[0]
-            _aucs.append(report['AUC '+k]) 
-        report['AUC AA'] = geomean(_aucs)
-        
+            _aucs_aa.append(report['AUC '+k])
+        report['AUC AA'] = geomean(_aucs_aa)
+
+        report['AUC general'] = geomean(_aucs_ood+_aucs_aa)
+
         print('Report: ', report)
         save_aucs(
                 report,
                 aucs_df_path,
+                dataset   = args.dataset,
+                model     = args.model,
+                reduction = args.reduction,
+                analysis  = args.analysis,
+                )
+
+        fpr_report = {}
+        _fprs_ood = []
+        for k in auc_kwargs_ood['atk_loaders']:
+            fpr_report['FPR '+k] = list(fprs_ood[k].values())[0]
+            _fprs_ood.append(fpr_report['FPR '+k])
+        fpr_report['FPR OoD'] = geomean(_fprs_ood)
+
+        _fprs_aa = []
+        for k in auc_kwargs_aa['atk_loaders']:
+            fpr_report['FPR '+k] = list(fprs_aa[k].values())[0]
+            _fprs_aa.append(fpr_report['FPR '+k])
+        fpr_report['FPR AA'] = geomean(_fprs_aa)
+
+        fpr_report['FPR general'] = geomean(_fprs_ood+_fprs_aa)
+
+        print('FPR report: ', fpr_report)
+        save_fprs(
+                fpr_report,
+                fprs_df_path,
                 dataset   = args.dataset,
                 model     = args.model,
                 reduction = args.reduction,

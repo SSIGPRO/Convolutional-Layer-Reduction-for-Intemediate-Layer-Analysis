@@ -74,6 +74,8 @@ results_path = Path.cwd()/'temp_results'
 
 aucs_df_path = results_path/'aucs_comparison.pickle'
 
+fprs_df_path = results_path/'fprs_comparison.pickle'
+
 #--------------------------------
 # Runing
 #--------------------------------

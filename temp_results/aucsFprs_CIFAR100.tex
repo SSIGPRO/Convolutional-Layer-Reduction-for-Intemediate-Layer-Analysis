@@ -1,0 +1,24 @@
+\begin{table*}
+	\centering
+	\caption{$\aucGeomOOD$, $\aucGeomAA$ and $\aucGeomALL$, with the respective \gls{fpr} at $95\%$ \gls{tpr}, for the tuned configurations and the compared detection methods (CIFAR100).}
+	\label{tab: aucs and fprs CIFAR100}
+	\begin{tabulary}{\linewidth}{C|c|CC|CC|CC|CC|CC|CC|CC|CC|CC|CC|CC|CC}
+		\toprule
+		\multicolumn{2}{c|}{} & \multicolumn{6}{c|}{\vgg} & \multicolumn{6}{c|}{\mobilenet} & \multicolumn{6}{c|}{\resnet} & \multicolumn{6}{c}{\convnext} \\\cline{3-26}
+		\multicolumn{2}{c|}{} & \multicolumn{2}{c|}{OoD} & \multicolumn{2}{c|}{AA} & \multicolumn{2}{c|}{ALL} & \multicolumn{2}{c|}{OoD} & \multicolumn{2}{c|}{AA} & \multicolumn{2}{c|}{ALL} & \multicolumn{2}{c|}{OoD} & \multicolumn{2}{c|}{AA} & \multicolumn{2}{c|}{ALL} & \multicolumn{2}{c|}{OoD} & \multicolumn{2}{c|}{AA} & \multicolumn{2}{c}{ALL} \\\cline{3-26}
+		Method & Reduction & $\aucGeomOOD$ & $\fprGeomOOD$ & $\aucGeomAA$ & $\fprGeomAA$ & $\aucGeomALL$ & $\fprGeomALL$ & $\aucGeomOOD$ & $\fprGeomOOD$ & $\aucGeomAA$ & $\fprGeomAA$ & $\aucGeomALL$ & $\fprGeomALL$ & $\aucGeomOOD$ & $\fprGeomOOD$ & $\aucGeomAA$ & $\fprGeomAA$ & $\aucGeomALL$ & $\fprGeomALL$ & $\aucGeomOOD$ & $\fprGeomOOD$ & $\aucGeomAA$ & $\fprGeomAA$ & $\aucGeomALL$ & $\fprGeomALL$ \\\midrule
+		
+		\multirow{3}{*}{\gls{macs}} & \avgpDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\
+		& \toeplitzDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\
+		& \kernelDimRed & $0.784$ & $0.647$ & $0.894$ & $0.276$ & $0.848$ & $0.388$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
+		
+		\multirow{3}{*}{\gls{dmd}} & \avgpDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\
+		& \toeplitzDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\
+		& \kernelDimRed & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
+		
+		\multicolumn{2}{c|}{\mspScore} & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
+		\multicolumn{2}{c|}{\doctorScore} & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
+		\multicolumn{2}{c|}{\reluScore} & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
+		\multicolumn{2}{c|}{\fsScore} & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ & $.$ \\\hline
+	\end{tabulary}
+\end{table*}

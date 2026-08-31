@@ -17,7 +17,7 @@ from peepholelib.models.model_wrap import ModelWrap
 from peepholelib.datasets.parsedDataset import ParsedDataset 
 from peepholelib.coreVectors.coreVectors import CoreVectors 
 from peepholelib.peepholes.peepholes import Peepholes
-from peepholelib.plots.atks import auc_atks 
+from peepholelib.plots.atks import auc_fpr 
 from configs.common import *
 
 # Tuner
@@ -154,7 +154,7 @@ def peephole_wrap(config, **kwargs):
             if type(scores) == tuple: scores = scores[0]
 
         auc_kwargs_ood = get_auc_kwargs_ood(args.model, args.dataset, ood_datasets)
-        aucs_ood = auc_atks(
+        aucs_ood, fprs_ood = auc_fpr(
                 datasets = ds,
                 scores = scores,
                 **auc_kwargs_ood,
@@ -162,7 +162,7 @@ def peephole_wrap(config, **kwargs):
                 )
 
         auc_kwargs_aa = get_auc_kwargs_aa(args.model, args.dataset, atk_names)
-        aucs_aa = auc_atks(
+        aucs_aa, fprs_aa = auc_fpr(
                 datasets = ds,
                 scores = scores,
                 **auc_kwargs_aa,
