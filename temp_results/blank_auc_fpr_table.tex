@@ -1,11 +1,10 @@
 \begin{table*}
 	\centering
-	\caption{\glspl{auc} and \glspl{fpr} for \gls{ood}/\gls{aa} detection methods based on the model's inputs and outputs in comparison with \gls{dmd} and \gls{macs} using each \glspl{dr} over \cifar.}
+	\caption{\glspl{auc}/\glspl{fpr} ($\aucGeom/\fprGeom$) for \gls{ood} and \gls{aa} detection methods based on the model's inputs and outputs in comparison with \gls{dmd} and \gls{macs} using each \glspl{dr} over \cifar.}
 	\label{tab: aucs and fprs}
 	\begin{tabulary}{\linewidth}{C|c|C|C|C|C|C|C|C|C}
 		\toprule
-		\multirow{2}{*}{Method} & \multirow{2}{*}{Reduction} & \multicolumn{2}{c|}{\vgg} & \multicolumn{2}{c|}{\mobilenet} & \multicolumn{2}{c|}{\resnet} & \multicolumn{2}{c}{\convnext} \\\cline{3-10}
-		 &  & $\aucGeomOOD/\fprGeomOOD$ & $\aucGeomAA/\fprGeomAA$ & $\aucGeomOOD/\fprGeomOOD$ & $\aucGeomAA/\fprGeomAA$ & $\aucGeomOOD/\fprGeomOOD$ & $\aucGeomAA/\fprGeomAA$ & $\aucGeomOOD/\fprGeomOOD$ & $\aucGeomAA/\fprGeomAA$ \\\midrule
+		Method & Reduction & \multicolumn{2}{c|}{\vgg} & \multicolumn{2}{c|}{\mobilenet} & \multicolumn{2}{c|}{\resnet} & \multicolumn{2}{c}{\convnext} \\\midrule
 		
 		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{macs}}} & \avgpDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
 		& \toeplitzDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
