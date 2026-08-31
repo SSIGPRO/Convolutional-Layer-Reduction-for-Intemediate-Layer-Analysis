@@ -1,0 +1,23 @@
+\begin{table*}
+	\centering
+	\caption{\glspl{auc}/\glspl{fpr} ($\aucGeom/\fprGeom$) for \gls{ood} and \gls{aa} detection methods based on the model's inputs and outputs in comparison with \gls{dmd} and \gls{macs} (configuration with smallest $\aucGeomAll$) using each \glspl{dr} over \imagenet.}
+	\label{tab: aucs and fprs ImageNet}
+	\begin{tabulary}{\linewidth}{C|c|C|C|C|C|C|C|C|C}
+		\toprule
+		\multirow{2}{*}{Method} & \multirow{2}{*}{Reduction} & \multicolumn{2}{c|}{\vgg} & \multicolumn{2}{c|}{\mobilenet} & \multicolumn{2}{c|}{\resnet} & \multicolumn{2}{c}{\convnext} \\\cline{3-10}
+		 &  & \gls{ood} & \gls{aa} & \gls{ood} & \gls{aa} & \gls{ood} & \gls{aa} & \gls{ood} & \gls{aa} \\\midrule
+		
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{macs}}} & \avgpDimRed & $0.72/0.77$ & $0.81/0.64$ & $0.74/0.81$ & $0.87/0.61$ & $0.81/0.80$ & $0.87/0.65$ & $0.88/0.74$ & $0.95/0.41$ \\
+		& \toeplitzDimRed & $0.69/0.82$ & $0.76/0.81$ & $0.72/0.83$ & $0.81/0.67$ & $0.69/0.89$ & $0.75/0.83$ & $0.82/0.82$ & $0.89/0.69$ \\
+		& \kernelDimRed & $0.73/0.80$ & $0.81/0.66$ & $0.74/0.81$ & $0.86/0.59$ & $0.84/0.76$ & $0.92/0.46$ & $0.89/0.69$ & $0.96/0.33$ \\\hline
+		
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{dmd}}} & \avgpDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
+		& \toeplitzDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
+		& \kernelDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
+		
+		\multicolumn{2}{c|}{\gls{msp}} & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
+		\multicolumn{2}{c|}{\gls{doctor}} & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
+		\multicolumn{2}{c|}{\gls{relu}} & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
+		\multicolumn{2}{c|}{\gls{fs}} & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
+	\end{tabulary}
+\end{table*}

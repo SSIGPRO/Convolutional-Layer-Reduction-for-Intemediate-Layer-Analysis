@@ -70,7 +70,7 @@ if __name__ == "__main__":
             std = normalization_std
             )
 
-    loaders = get_loaders(ood_datasets)
+    loaders = [k for k in get_loaders(ood_datasets) if 'test' in k or k == f'{args.dataset}-val']
     inference_names = get_inference_names(ood_datasets)
     transforms = get_transforms(ood_datasets)
 
