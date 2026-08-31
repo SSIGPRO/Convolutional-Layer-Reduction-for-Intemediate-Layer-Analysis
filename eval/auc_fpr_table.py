@@ -77,7 +77,7 @@ if __name__ == "__main__":
                 new_vals = list(originals)
                 for i, (model, col, metric) in enumerate(col_order):
                     if (model, col, metric) in entry:
-                        new_vals[i] = f'{entry[(model, col, metric)]:.3f}'
+                        new_vals[i] = f'{entry[(model, col, metric)]:.2f}'
 
                 it = iter(new_vals)
                 line = re.sub(r'\$([^$]*)\$', lambda m: f'${next(it)}$', line)
