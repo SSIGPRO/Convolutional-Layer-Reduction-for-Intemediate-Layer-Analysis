@@ -2,22 +2,22 @@
 	\centering
 	\caption{\glspl{auc} and \glspl{fpr} for \gls{ood}/\gls{aa} detection methods based on the model's inputs and outputs in comparison with \gls{dmd} and \gls{macs} using each \glspl{dr} over \cifar.}
 	\label{tab: aucs and fprs}
-	\begin{tabulary}{\linewidth}{C|c|C|C|C|C|C|C|C|C|C|C|C|C}
+	\begin{tabulary}{\linewidth}{C|c|C|C|C|C|C|C|C|C}
 		\toprule
-		\multirow{2}{*}{Method} & \multirow{2}{*}{Reduction} & \multicolumn{3}{c|}{\vgg} & \multicolumn{3}{c|}{\mobilenet} & \multicolumn{3}{c|}{\resnet} & \multicolumn{3}{c}{\convnext} \\\cline{3-14}
-		 &  & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ & $\aucGeomOOD\backslash\fprGeomOOD$ & $\aucGeomAA\backslash\fprGeomAA$ & $\aucGeomAll\backslash\fprGeomAll$ \\\midrule
+		\multirow{2}{*}{Method} & \multirow{2}{*}{Reduction} & \multicolumn{2}{c|}{\vgg} & \multicolumn{2}{c|}{\mobilenet} & \multicolumn{2}{c|}{\resnet} & \multicolumn{2}{c}{\convnext} \\\cline{3-10}
+		 &  & $\aucGeomOOD/\fprGeomOOD$ & $\aucGeomAA/\fprGeomAA$ & $\aucGeomOOD/\fprGeomOOD$ & $\aucGeomAA/\fprGeomAA$ & $\aucGeomOOD/\fprGeomOOD$ & $\aucGeomAA/\fprGeomAA$ & $\aucGeomOOD/\fprGeomOOD$ & $\aucGeomAA/\fprGeomAA$ \\\midrule
 		
-		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{macs}}} & \avgpDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
-		& \toeplitzDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
-		& \kernelDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{macs}}} & \avgpDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
+		& \toeplitzDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
+		& \kernelDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
 		
-		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{dmd}}} & \avgpDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
-		& \toeplitzDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\
-		& \kernelDimRed & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		\multirow{3}{*}{\rotatebox[origin=c]{90}{\gls{dmd}}} & \avgpDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
+		& \toeplitzDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\
+		& \kernelDimRed & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
 		
-		\multicolumn{2}{c|}{\gls{msp}} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
-		\multicolumn{2}{c|}{\gls{doctor}} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
-		\multicolumn{2}{c|}{\gls{relu}} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
-		\multicolumn{2}{c|}{\gls{fs}} & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ & $.\backslash.$ \\\hline
+		\multicolumn{2}{c|}{\gls{msp}} & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
+		\multicolumn{2}{c|}{\gls{doctor}} & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
+		\multicolumn{2}{c|}{\gls{relu}} & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
+		\multicolumn{2}{c|}{\gls{fs}} & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ & $./.$ \\\hline
 	\end{tabulary}
 \end{table*}

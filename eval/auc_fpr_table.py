@@ -37,14 +37,14 @@ dataset_macros = {
         }
 
 # column order matching the table layout, left to right. Each cell holds both
-# the AUC and the FPR of a split, printed as 'AUC\FPR'
+# the AUC and the FPR of a split, printed as 'AUC/FPR'
 col_order = []
 for model in ['VGG', 'MobileNet', 'ResNet', 'ConvNeXt']:
-    for split in ['OoD', 'AA', 'general']:
+    for split in ['OoD', 'AA']:
         col_order.append((model, split))
 
 # cells to be filled in the template
-blank_value = '$.\\backslash.$'
+blank_value = '$./.$'
 
 if __name__ == "__main__":
     dfs = {
@@ -88,11 +88,11 @@ if __name__ == "__main__":
 
                 new_vals = re.findall(r'\$([^$]*)\$', line)
                 for i, (model, split) in enumerate(col_order):
-                    parts = new_vals[i].split('\\backslash')
+                    parts = new_vals[i].split('/')
                     for p, metric in enumerate(['aucs', 'fprs']):
                         if (model, split, metric) in entry:
                             parts[p] = f'{entry[(model, split, metric)]:.2f}'
-                    new_vals[i] = '\\backslash'.join(parts)
+                    new_vals[i] = '/'.join(parts)
 
                 it = iter(new_vals)
                 line = re.sub(r'\$([^$]*)\$', lambda m: f'${next(it)}$', line)
