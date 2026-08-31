@@ -182,20 +182,21 @@ if __name__ == "__main__":
                 analysis  = args.analysis,
                 )
 
+        # `auc_fpr()` returns 1-FPR, which is aggregated with the geometric mean
         fpr_report = {}
         _fprs_ood = []
         for k in auc_kwargs_ood['atk_loaders']:
-            fpr_report['FPR '+k] = list(fprs_ood[k].values())[0]
-            _fprs_ood.append(fpr_report['FPR '+k])
-        fpr_report['FPR OoD'] = geomean(_fprs_ood)
+            _fprs_ood.append(list(fprs_ood[k].values())[0])
+            fpr_report['FPR '+k] = 1 - _fprs_ood[-1]
+        fpr_report['FPR OoD'] = 1 - geomean(_fprs_ood)
 
         _fprs_aa = []
         for k in auc_kwargs_aa['atk_loaders']:
-            fpr_report['FPR '+k] = list(fprs_aa[k].values())[0]
-            _fprs_aa.append(fpr_report['FPR '+k])
-        fpr_report['FPR AA'] = geomean(_fprs_aa)
+            _fprs_aa.append(list(fprs_aa[k].values())[0])
+            fpr_report['FPR '+k] = 1 - _fprs_aa[-1]
+        fpr_report['FPR AA'] = 1 - geomean(_fprs_aa)
 
-        fpr_report['FPR general'] = geomean(_fprs_ood+_fprs_aa)
+        fpr_report['FPR general'] = 1 - geomean(_fprs_ood+_fprs_aa)
 
         print('FPR report: ', fpr_report)
         save_fprs(
