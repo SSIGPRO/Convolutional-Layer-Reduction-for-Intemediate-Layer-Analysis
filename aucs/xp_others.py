@@ -134,7 +134,7 @@ if __name__ == "__main__":
                 prepro_dict = {
                     'median': MedianPool2d(kernel_size=3, stride=1, padding=1),
                     'bit_depth': partial(bit_depth_torch, bits=5),
-                    'nlm': partial(NLM_filtering_torch, kernel_size=11, std=4.0, kernel_size_mean=3, sub_filter_size=32),
+                    'nlm': partial(NLM_filtering_torch, kernel_size=11, std=4.0, kernel_size_mean=3, sub_filter_size=32, device=device),
                     }
                 )
 
