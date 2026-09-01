@@ -181,13 +181,13 @@ if __name__ == "__main__":
             _aucs_ood = []
             for k in auc_kwargs_ood['atk_loaders']:
                 report_auc['AUC '+k] = aucs_ood[k][score_name]
-                _aucs_ood.append(report_auc['AUC '+k])
+                _aucs_ood.append(report_auc['AUC '+k] + 1e-3 if report_auc['AUC '+k] < 1e-4 else report_auc['AUC '+k])
             report_auc['AUC OoD'] = geomean(_aucs_ood)
 
             _aucs_aa = []
             for k in auc_kwargs_aa['atk_loaders']:
                 report_auc['AUC '+k] = aucs_aa[k][score_name]
-                _aucs_aa.append(report_auc['AUC '+k])
+                _aucs_aa.append(report_auc['AUC '+k] + 1e-3 if report_auc['AUC '+k] < 1e-4 else report_auc['AUC '+k])
             report_auc['AUC AA'] = geomean(_aucs_aa)
 
             report_auc['AUC general'] = geomean(_aucs_ood+_aucs_aa)
