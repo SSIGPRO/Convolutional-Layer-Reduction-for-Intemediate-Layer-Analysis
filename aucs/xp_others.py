@@ -142,7 +142,7 @@ if __name__ == "__main__":
                     datasets = ds,
                     loaders_ori = score_loaders,
                     detector = fsd,
-                    batch_size = 2**6,
+                    batch_size = 2**8,
                     score_name = 'FS',
                     append_scores = scores,
                     verbose = verbose,
